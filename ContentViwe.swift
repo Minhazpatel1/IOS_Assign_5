@@ -1,3 +1,5 @@
+import SwiftUI
+
 struct ContentView: View {
     @StateObject var viewModel = PresidentViewModel()
 
@@ -5,20 +7,33 @@ struct ContentView: View {
         NavigationView {
             List(viewModel.presidents) { president in
                 NavigationLink(destination: DetailView(president: president)) {
-                    VStack(alignment: .leading) {
-                        Text(president.name).font(.headline)
-                        Text(ordinal(president.number)).font(.subheadline)
+                    HStack {
+                        AsyncImage(url: URL(string: president.url.trimmingCharacters(in: .whitespaces))) { image in
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 50, height: 50)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        } placeholder: {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 50, height: 50)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+
+                        VStack(alignment: .leading) {
+                            Text(president.name)
+                                .font(.headline)
+                            Text(president.politicalParty)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.leading, 8)
                     }
+                    .padding(.vertical, 4)
                 }
             }
-            .navigationTitle("US Presidents")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Presidents")
         }
-    }
-
-    func ordinal(_ number: Int) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .ordinal
-        return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
     }
 }
